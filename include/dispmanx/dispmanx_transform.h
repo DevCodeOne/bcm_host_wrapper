@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "bcm_host_type.h"
 #include "dispmanx_resource.h"
 #include "native/dispmanx_native.h"
@@ -37,6 +39,8 @@ namespace bcm_host_wrapper {
         template<typename T>
         class dispmanx_transform {
            public:
+            static_assert(std::is_same_v<real, T> || std::is_same_v<stub, T>, "T can be detail::stub or detail::real");
+
             dispmanx_transform(const orientation &orient = orientation::NO_ROTATION, const flipped &flip = flipped::NO,
                                const snapshot_behaviour &behaviour = snapshot_behaviour::NONE);
             /** \brief Returns the underlying structure which is used by the vc_dispman*
@@ -49,6 +53,16 @@ namespace bcm_host_wrapper {
             flipped m_flip;
             snapshot_behaviour m_behaviour;
         };
+
+        template<typename T>
+        dispmanx_transform<T>::dispmanx_transform(const orientation &orient, const flipped &flip,
+                                                  const snapshot_behaviour &behaviour)
+            : m_orient(orient), m_flip(flip), m_behaviour(behaviour) {}
+
+        template<typename T>
+        DISPMANX_TRANSFORM_T dispmanx_transform<T>::native_transform() const {
+            return (DISPMANX_TRANSFORM_T)((int)m_orient | (int)m_flip | (int)m_behaviour);
+        }
 
     }  // namespace detail
     using dispmanx_transform = detail::dispmanx_transform<detail::bcm_host_type>;

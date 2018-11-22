@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "bcm_host_type.h"
 #include "native/dispmanx_native.h"
 
@@ -14,6 +16,8 @@ namespace bcm_host_wrapper {
         template<typename T>
         class dispmanx_element_handle {
            public:
+            static_assert(std::is_same_v<real, T> || std::is_same_v<stub, T>, "T can be detail::stub or detail::real");
+
             dispmanx_element_handle(dispmanx_element_handle &&other);
             dispmanx_element_handle(const dispmanx_element_handle &other) = delete;
 
@@ -26,6 +30,21 @@ namespace bcm_host_wrapper {
             template<typename T2>
             friend class dispmanx_update;
         };
+
+        template<typename T>
+        dispmanx_element_handle<T>::dispmanx_element_handle(const DISPMANX_ELEMENT_HANDLE_T &handle)
+            : m_handle(handle) {}
+
+        template<typename T>
+        dispmanx_element_handle<T>::dispmanx_element_handle(dispmanx_element_handle &&other)
+            : m_handle(other.handle()) {
+            other.m_handle = 0;
+        }
+
+        template<typename T>
+        const DISPMANX_ELEMENT_HANDLE_T &dispmanx_element_handle<T>::handle() const {
+            return m_handle;
+        }
 
     }  // namespace detail
     using dispmanx_element_handle = detail::dispmanx_element_handle<detail::bcm_host_type>;

@@ -3,15 +3,17 @@ from conans import ConanFile, CMake, tools
 # udevpp, bcmhost ?
 class BcmHostWrapper(ConanFile):
     name = "BcmHostWrapper"
-    version = "0.1"
+    version = "0.1-2"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"use_bcm_host": [True, False]}
+    options = {"build_tests" : [True, False], "use_bcm_host": [True, False]}
     generators = "cmake", "ycm"
-    default_options = {"use_bcm_host" : False}
+    default_options = {"use_bcm_host" : False, "build_tests" : True}
+    exports_sources = "tests*", "include*", "src*", "CMakeLists.txt"
 
     def build(self):
         cmake = CMake(self)
         cmake.definitions["USE_BCM_HOST"] = "On" if self.options.use_bcm_host else "Off"
+        cmake.definitions["BUILD_TESTS"] = "On" if self.options.build_tests else "Off"
         cmake.definitions["CMAKE_EXPORT_COMPILE_COMMANDS"] = "On"
         cmake.configure()
         cmake.build()

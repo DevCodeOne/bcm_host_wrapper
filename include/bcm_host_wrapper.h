@@ -26,10 +26,10 @@ namespace bcm_host_wrapper {
         };
 
         std::shared_ptr<bcm_host<stub>> bcm_host<stub>::instance() {
-            std::lock_guard<std::mutex> instance_guard{_instance_mutex};
+            std::lock_guard<std::mutex> _instance_guard{_instance_mutex};
 
             if (_instance == nullptr) {
-                _instance = std::shared_ptr<bcm_host<stub>>(new bcm_host<stub>);
+                _instance = std::shared_ptr<bcm_host>(new bcm_host);
             }
 
             return _instance;
@@ -47,6 +47,20 @@ namespace bcm_host_wrapper {
             static inline std::shared_ptr<bcm_host> _instance{nullptr};
             static inline std::mutex _instance_mutex{};
         };
+
+        bcm_host<real>::bcm_host() { bcm_host_init(); }
+
+        bcm_host<real>::~bcm_host() { bcm_host_deinit(); }
+
+        std::shared_ptr<bcm_host<real>> bcm_host<real>::instance() {
+            std::lock_guard<std::mutex> _instance_guard{_instance_mutex};
+
+            if (_instance == nullptr) {
+                _instance = std::shared_ptr<bcm_host>(new bcm_host);
+            }
+
+            return _instance;
+        }
     }  // namespace detail
 
     using bcm_host = detail::bcm_host<detail::bcm_host_type>;

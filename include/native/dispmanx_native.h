@@ -8,6 +8,14 @@
 // TODO include real dispmanx
 #else
 // Define all needed structs as empty structs since they are not actually used
+
+using DISPMANX_DISPLAY_HANDLE_T = uint32_t;
+using DISPMANX_UPDATE_HANDLE_T = uint32_t;
+using DISPMANX_ELEMENT_HANDLE_T = uint32_t;
+using DISPMANX_RESOURCE_HANDLE_T = uint32_t;
+
+using DISPMANX_PROTECTION_T = uint32_t;
+
 struct VC_RECT_T {};
 
 struct DISPMANX_TRANSFORM_T {};
@@ -18,18 +26,16 @@ struct DISPMANX_MODEINFO_T {
     int32_t width;
     int32_t height;
     int8_t display_num;
+    int8_t input_format;
 };
 
-struct VC_DISPMANX_ALPHA_T {};
+struct VC_DISPMANX_ALPHA_T {
+    int32_t flags;
+    int32_t opacity;
+    DISPMANX_RESOURCE_HANDLE_T handle;
+};
 
 struct DISPMANX_CLAMP_T {};
-
-using DISPMANX_DISPLAY_HANDLE_T = uint32_t;
-using DISPMANX_UPDATE_HANDLE_T = uint32_t;
-using DISPMANX_ELEMENT_HANDLE_T = uint32_t;
-using DISPMANX_RESOURCE_HANDLE_T = uint32_t;
-
-using DISPMANX_PROTECTION_T = uint32_t;
 
 // TODO replace with enums, at best in own namespaces so the global namespace
 // isn't litered
@@ -69,30 +75,21 @@ inline constexpr int DISPMANX_ID_FORCE_OTHER = 6;
 enum VC_IMAGE_TYPE_T { VC_IMAGE_RGBA32 };
 
 int vc_dispmanx_rect_set(VC_RECT_T *, uint32_t, uint32_t, uint32_t, uint32_t);
-DISPMANX_RESOURCE_HANDLE_T vc_dispmanx_resource_create(VC_IMAGE_TYPE_T,
-                                                       uint32_t, uint32_t,
-                                                       uint32_t *);
-int vc_dispmanx_resource_write_data(DISPMANX_RESOURCE_HANDLE_T, VC_IMAGE_TYPE_T,
-                                    int, void *, const VC_RECT_T *);
+DISPMANX_RESOURCE_HANDLE_T vc_dispmanx_resource_create(VC_IMAGE_TYPE_T, uint32_t, uint32_t, uint32_t *);
+int vc_dispmanx_resource_write_data(DISPMANX_RESOURCE_HANDLE_T, VC_IMAGE_TYPE_T, int, void *, const VC_RECT_T *);
 int vc_dispmanx_resource_delete(DISPMANX_RESOURCE_HANDLE_T);
-DISPMANX_ELEMENT_HANDLE_T vc_dispmanx_element_add(
-    DISPMANX_UPDATE_HANDLE_T, DISPMANX_DISPLAY_HANDLE_T, int32_t layer,
-    const VC_RECT_T *, DISPMANX_RESOURCE_HANDLE_T, const VC_RECT_T *,
-    DISPMANX_PROTECTION_T, VC_DISPMANX_ALPHA_T *, DISPMANX_CLAMP_T *,
-    DISPMANX_TRANSFORM_T);
-int vc_dispmanx_element_change_source(DISPMANX_UPDATE_HANDLE_T,
-                                      DISPMANX_ELEMENT_HANDLE_T,
-                                      DISPMANX_RESOURCE_HANDLE_T);
-int vc_dispmanx_element_change_layer(DISPMANX_UPDATE_HANDLE_T,
-                                     DISPMANX_ELEMENT_HANDLE_T, int32_t);
-int vc_dispmanx_element_modified(DISPMANX_UPDATE_HANDLE_T,
-                                 DISPMANX_ELEMENT_HANDLE_T, const VC_RECT_T *);
-int vc_dispmanx_element_remove(DISPMANX_UPDATE_HANDLE_T,
-                               DISPMANX_ELEMENT_HANDLE_T);
+DISPMANX_ELEMENT_HANDLE_T vc_dispmanx_element_add(DISPMANX_UPDATE_HANDLE_T, DISPMANX_DISPLAY_HANDLE_T, int32_t,
+                                                  const VC_RECT_T *, DISPMANX_RESOURCE_HANDLE_T, const VC_RECT_T *,
+                                                  DISPMANX_PROTECTION_T, VC_DISPMANX_ALPHA_T *, DISPMANX_CLAMP_T *,
+                                                  DISPMANX_TRANSFORM_T);
+DISPMANX_UPDATE_HANDLE_T vc_dispmanx_update_start(int32_t);
+int vc_dispmanx_element_change_source(DISPMANX_UPDATE_HANDLE_T, DISPMANX_ELEMENT_HANDLE_T, DISPMANX_RESOURCE_HANDLE_T);
+int vc_dispmanx_element_change_layer(DISPMANX_UPDATE_HANDLE_T, DISPMANX_ELEMENT_HANDLE_T, int32_t);
+int vc_dispmanx_element_modified(DISPMANX_UPDATE_HANDLE_T, DISPMANX_ELEMENT_HANDLE_T, const VC_RECT_T *);
+int vc_dispmanx_element_remove(DISPMANX_UPDATE_HANDLE_T, DISPMANX_ELEMENT_HANDLE_T);
 int vc_dispmanx_update_submit_sync(DISPMANX_UPDATE_HANDLE_T);
 DISPMANX_DISPLAY_HANDLE_T vc_dispmanx_display_open(uint32_t);
 int vc_dispmanx_display_close(DISPMANX_DISPLAY_HANDLE_T);
-int vc_dispmanx_display_get_info(DISPMANX_DISPLAY_HANDLE_T,
-                                 DISPMANX_MODEINFO_T *);
+int vc_dispmanx_display_get_info(DISPMANX_DISPLAY_HANDLE_T, DISPMANX_MODEINFO_T *);
 
 #endif
