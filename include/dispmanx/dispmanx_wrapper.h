@@ -1,21 +1,34 @@
 #pragma once
 
-#include "native/bcm_host_native.h"
-#include "dispmanx/dispmanx_data_types_wrapper.h"
+#include <cstdint>
+#include <memory>
+#include <optional>
+
+#include "dispmanx/dispmanx_alpha.h"
+#include "dispmanx/dispmanx_clamp.h"
+#include "dispmanx/dispmanx_display.h"
+#include "dispmanx/dispmanx_element_handle.h"
+#include "dispmanx/dispmanx_modeinfo.h"
+#include "dispmanx/dispmanx_pixmap.h"
+#include "dispmanx/dispmanx_rect.h"
+#include "dispmanx/dispmanx_resource.h"
+#include "dispmanx/dispmanx_transform.h"
+#include "dispmanx/dispmanx_update.h"
+#include "dispmanx/dispmanx_wrapper.h"
 
 namespace bcm_host_wrapper {
-namespace detail {
-template <typename T>
-class dispmanx;
 
-template <>
-class dispmanx<stub> {};
+    enum struct dispmanx_orientation {
+        dispmanx_no_rotate = DISPMANX_NO_ROTATE,
+        dispmanx_rotate_90 = DISPMANX_ROTATE_90,
+        dispmanx_rotate_180 = DISPMANX_ROTATE_180,
+        dispmanx_rotate_270 = DISPMANX_ROTATE_270
+    };
 
-template <>
-class dispmanx<real> {};
+    enum struct dispmanx_flip { no = 0, horizontally = DISPMANX_FLIP_HRIZ, vertically = DISPMANX_FLIP_VERT };
 
-}  // namespace detail
+    enum struct dispmanx_image_types { rgba_32 = 0 };
 
-using dispmanx = detail::dispmanx<detail::bcm_host_type>;
+    namespace detail {}  // namespace detail
 
 }  // namespace bcm_host_wrapper

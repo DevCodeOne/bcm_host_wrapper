@@ -3,7 +3,7 @@
 
 int main() {
     auto bcm_instance = bcm_host_wrapper::bcm_host::instance();
-    bcm_host_wrapper::dispmanx_rect rect;
+    auto display = bcm_host_wrapper::dispmanx_display::open_display(bcm_host_wrapper::dispmanx_display_ids::HDMI);
 
     return 0;
 }
